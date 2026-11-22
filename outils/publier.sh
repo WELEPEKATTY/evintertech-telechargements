@@ -49,4 +49,15 @@ git commit -qm "Publication $ETIQUETTE"
 git push -q -f origin televersement
 cd "$DEPOT" && git worktree remove --force "$TRAVAIL/arbre"
 rm -rf "$TRAVAIL"
-echo "Publié : $ETIQUETTE (la Release apparaît sur GitHub dans une minute)"
+# On attend que GitHub ait joint les fichiers (taille comprise) : deux publications lancées
+# coup sur coup se marcheraient dessus sur la branche « televersement »
+DEPOT_GH=$(git -C "$DEPOT" remote get-url origin | sed -E 's#.*github.com[:/](.*)\.git$#\1#; s#.*github.com[:/]##')
+for F in $LISTE; do
+  TAILLE=$(wc -c < "${DOSSIER_FICHIERS:-$(dirname "$FICHIER")}/$F" | tr -d ' ')
+  for i in $(seq 1 60); do
+    gh api "repos/$DEPOT_GH/releases/tags/$ETIQUETTE" --jq ".assets[] | select(.name == \"$F\") | .size" 2>/dev/null | grep -qx "$TAILLE" && break
+    [ "$i" = 60 ] && { echo "Délai dépassé : $F n'est pas encore en ligne sur $ETIQUETTE."; exit 1; }
+    sleep 10
+  done
+done
+echo "Publié : $ETIQUETTE"
