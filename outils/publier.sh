@@ -9,14 +9,16 @@ SLUG="$1"; VERSION="$2"; FICHIER="$3"; JOURNAL="$4"; TITRE="${5:-$SLUG $VERSION}
 [ -f "$FICHIER" ] || { echo "Usage : publier.sh <slug> <version> <fichier> <CHANGELOG.md> [titre]"; exit 1; }
 SETUP=$(basename "$FICHIER")
 # Notes : la section de cette version dans le CHANGELOG
-NOTES=$(awk -v v="## [$VERSION]" 'index($0, v) == 1 { dedans = 1; next } /^## \[/ { if (dedans) exit } dedans' "$JOURNAL" | sed '/^$/d')
+# ETIQUETTE et NOTES peuvent être imposées (ex. pack testeurs : ETIQUETTE=pack-testeurs)
+ETIQUETTE=${ETIQUETTE:-$SLUG-v$VERSION}
+[ -n "$NOTES" ] || NOTES=$(awk -v v="## [$VERSION]" 'index($0, v) == 1 { dedans = 1; next } /^## \[/ { if (dedans) exit } dedans' "$JOURNAL" | sed '/^$/d')
 
 TRAVAIL=$(mktemp -d)
 cp "$FICHIER" "$TRAVAIL/"
 node -e '
 const [etiquette, titre, notes, fichier] = process.argv.slice(1);
 require("fs").writeFileSync(process.argv[5] + "/publication.json", JSON.stringify({ etiquette, titre, notes, fichiers: [fichier] }, null, 2));
- ' "$SLUG-v$VERSION" "$TITRE" "$NOTES" "$SETUP" "$TRAVAIL"
+ ' "$ETIQUETTE" "$TITRE" "$NOTES" "$SETUP" "$TRAVAIL"
 
 cd "$DEPOT"
 git fetch -q origin main
@@ -31,8 +33,8 @@ git rm -rq --cached . >/dev/null 2>&1 || true
 git clean -fdxq -e .github
 cp "$TRAVAIL/$SETUP" "$TRAVAIL/publication.json" .
 git add .github "$SETUP" publication.json
-git commit -qm "Publication $SLUG-v$VERSION"
+git commit -qm "Publication $ETIQUETTE"
 git push -q -f origin televersement
 cd "$DEPOT" && git worktree remove --force "$TRAVAIL/arbre"
 rm -rf "$TRAVAIL"
-echo "Publié : $SLUG-v$VERSION (la Release apparaît sur GitHub dans une minute)"
+echo "Publié : $ETIQUETTE (la Release apparaît sur GitHub dans une minute)"
