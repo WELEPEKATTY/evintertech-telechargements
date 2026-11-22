@@ -8,6 +8,15 @@ DEPOT=$(cd "$(dirname "$0")/.." && pwd)
 SLUG="$1"; VERSION="$2"; FICHIER="$3"; JOURNAL="$4"; TITRE="${5:-$SLUG $VERSION}"
 [ -f "$FICHIER" ] || { echo "Usage : publier.sh <slug> <version> <fichier> <CHANGELOG.md> [titre]"; exit 1; }
 SETUP=$(basename "$FICHIER")
+# Installateur incomplet ou abîmé : on refuse de publier (Windows afficherait « integrity check has failed »)
+case "$FICHIER" in
+  *.exe|*.zip)
+    if command -v 7z >/dev/null; then
+      7z t "$FICHIER" >/dev/null 2>&1 || { echo "Refusé : $FICHIER est incomplet ou abîmé (7z t)."; exit 1; }
+    else
+      echo "Attention : 7z absent, intégrité de $FICHIER non vérifiée."
+    fi ;;
+esac
 # Notes : la section de cette version dans le CHANGELOG
 # ETIQUETTE et NOTES peuvent être imposées (ex. installateurs : ETIQUETTE=installateurs)
 ETIQUETTE=${ETIQUETTE:-$SLUG-v$VERSION}
