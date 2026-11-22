@@ -1,0 +1,29 @@
+# Publie une version : on pousse sur la branche « televersement » un commit contenant
+# publication.json et les fichiers à joindre ; ce flux crée (ou complète) la Release.
+name: Publier une version
+on:
+  push:
+    branches: [televersement]
+permissions:
+  contents: write
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: televersement
+      - name: Créer la Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ETIQUETTE=$(jq -r .etiquette publication.json)
+          TITRE=$(jq -r .titre publication.json)
+          jq -r .notes publication.json > notes.md
+          mapfile -t FICHIERS < <(jq -r '.fichiers[]' publication.json)
+          if gh release view "$ETIQUETTE" >/dev/null 2>&1; then
+            gh release edit "$ETIQUETTE" --title "$TITRE" --notes-file notes.md
+            gh release upload "$ETIQUETTE" "${FICHIERS[@]}" --clobber
+          else
+            gh release create "$ETIQUETTE" "${FICHIERS[@]}" --title "$TITRE" --notes-file notes.md --target main
+          fi

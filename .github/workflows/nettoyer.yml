@@ -1,0 +1,21 @@
+# Supprime d'anciennes publications : on pousse sur la branche « nettoyage » un commit
+# contenant suppression.txt (une étiquette par ligne). La Release et son étiquette sont retirées.
+name: Supprimer des publications
+on:
+  push:
+    branches: [nettoyage]
+permissions:
+  contents: write
+jobs:
+  supprimer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: nettoyage
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          grep -v '^\s*$' suppression.txt | while read -r ETIQUETTE; do
+            gh release delete "$ETIQUETTE" --cleanup-tag -y && echo "Supprimée : $ETIQUETTE"
+          done
