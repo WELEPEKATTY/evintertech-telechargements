@@ -3,7 +3,8 @@
 Installateurs officiels des logiciels EVINTERTECH, publiés comme « Releases » de ce dépôt.
 
 - Catalogue et historique : https://www.evintertech.com/logiciels
-- Étiquettes : `<logiciel>-v<x.y.z>` (exemple : `fonds-animes-v1.6.0`) et `pack-installation`.
+- Étiquettes : `<logiciel>-v<x.y.z>`, ou `<logiciel>-v<x.y.z>-beta.<n>` pendant la bêta (exemple : `fonds-animes-v1.0.0-beta.1`), et `pack-installation`.
+- Une version finale passe après ses bêtas : 1.0.0-beta.1 < 1.0.0-beta.2 < 1.0.0. Le site ignore les publications antérieures à la colonne `versions_depuis` de la fiche (remise à zéro des numéros pour la bêta).
 - Le code source des logiciels n'est pas ici, seulement les fichiers à installer.
 
 Aide : support@evintertech.com

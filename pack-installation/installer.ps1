@@ -24,7 +24,8 @@ if ($cer) {
 $f = $fiche.derniere.installateur
 if (-not $f) { Write-Host "$($fiche.nom) n'est pas encore publié."; exit 0 }
 $dest = Join-Path $env:TEMP $f.nom
-Write-Host "Téléchargement de $($fiche.nom) $($fiche.derniere.version)..."
+$version = $fiche.derniere.version -replace "-beta\.(\d+)$", " bêta $1"
+Write-Host "Téléchargement de $($fiche.nom) $version..."
 Invoke-WebRequest -Uri $f.url -OutFile $dest -UseBasicParsing
 if ($f.sha256 -and ((Get-FileHash $dest -Algorithm SHA256).Hash.ToLower() -ne $f.sha256)) {
   Write-Host "Fichier abîmé, installation annulée." -ForegroundColor Red; exit 1
