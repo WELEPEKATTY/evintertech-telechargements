@@ -15,10 +15,10 @@ if ($cer) {
   Write-Host "Certificat absent du pack : les installateurs fonctionneront, avec l'avertissement de Windows." -ForegroundColor DarkYellow
 }
 
-# 2. Logiciels Windows publiés
+# 2. Logiciels publiés avec un installateur Windows (applications et plugins)
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $catalogue = Invoke-RestMethod "https://www.evintertech.com/api/public/logiciels"
-$windows = @($catalogue.logiciels | Where-Object { $_.plateforme -eq "windows" -and $_.derniere -and $_.derniere.installateur })
+$windows = @($catalogue.logiciels | Where-Object { $_.plateforme -in @("windows","plugin") -and $_.derniere.installateur.nom -like "*.exe" })
 if (-not $windows) { Write-Host "Aucun logiciel Windows publié pour le moment."; exit 0 }
 
 foreach ($l in $windows) {
