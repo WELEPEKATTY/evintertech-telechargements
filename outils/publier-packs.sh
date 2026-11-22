@@ -10,7 +10,8 @@ TRAVAIL=$(mktemp -d)
 FICHIERS=""
 while [ $# -ge 2 ]; do
   SLUG="$1"; NOM="$2"; shift 2
-  ZIP="Pack-d-installation-$(printf '%s' "$NOM" | iconv -f UTF-8 -t ASCII//TRANSLIT | sed 's/[^A-Za-z0-9]\{1,\}/-/g; s/^-//; s/-$//').zip"
+  # Même règle que le site (src/lib/logiciels.server.ts, nomPack) : accents retirés, le reste en tirets
+  ZIP=$(node -e 'const n = process.argv[1].normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, ""); console.log(`Pack-d-installation-${n}.zip`)' "$NOM")
   DOSSIER="$TRAVAIL/Pack d'installation $NOM"
   mkdir -p "$DOSSIER"
   cp "$DEPOT/pack-installation/"* "$DOSSIER/"
