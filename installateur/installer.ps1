@@ -1,12 +1,12 @@
 ﻿$ErrorActionPreference = "Stop"
 $ici = Split-Path -Parent $MyInvocation.MyCommand.Path
-# Le logiciel de ce pack (identifiant de la page Logiciels), écrit à la publication du pack
+# Le logiciel de cet installateur (identifiant de la page Logiciels), écrit à la publication
 $slug = (Get-Content (Join-Path $ici "logiciel.txt") -Raw).Trim()
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $fiche = Invoke-RestMethod "https://www.evintertech.com/api/public/logiciels/$slug"
 Write-Host ""
-Write-Host "  EVINTERTECH - pack d'installation $($fiche.nom)" -ForegroundColor Yellow
+Write-Host "  EVINTERTECH - installateur $($fiche.nom)" -ForegroundColor Yellow
 Write-Host ""
 
 # 1. Certificat EVINTERTECH : Windows reconnaît ensuite nos logiciels signés
@@ -17,7 +17,7 @@ if ($cer) {
   Import-Certificate -FilePath $cer.FullName -CertStoreLocation Cert:\CurrentUser\TrustedPublisher | Out-Null
   Write-Host "Certificat EVINTERTECH installé." -ForegroundColor Green
 } else {
-  Write-Host "Certificat absent du pack : l'installation fonctionnera, avec l'avertissement de Windows." -ForegroundColor DarkYellow
+  Write-Host "Certificat absent : l'installation fonctionnera, avec l'avertissement de Windows." -ForegroundColor DarkYellow
 }
 
 # 2. Dernière version du logiciel

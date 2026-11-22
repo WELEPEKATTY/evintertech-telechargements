@@ -1,4 +1,4 @@
-Pack d'installation EVINTERTECH
+Installateur EVINTERTECH
 
 1. Clic droit sur le zip > Extraire tout.
 2. Double-cliquez sur Installer.cmd.

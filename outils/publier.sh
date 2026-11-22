@@ -9,7 +9,7 @@ SLUG="$1"; VERSION="$2"; FICHIER="$3"; JOURNAL="$4"; TITRE="${5:-$SLUG $VERSION}
 [ -f "$FICHIER" ] || { echo "Usage : publier.sh <slug> <version> <fichier> <CHANGELOG.md> [titre]"; exit 1; }
 SETUP=$(basename "$FICHIER")
 # Notes : la section de cette version dans le CHANGELOG
-# ETIQUETTE et NOTES peuvent être imposées (ex. packs d'installation : ETIQUETTE=pack-installation)
+# ETIQUETTE et NOTES peuvent être imposées (ex. installateurs : ETIQUETTE=installateurs)
 ETIQUETTE=${ETIQUETTE:-$SLUG-v$VERSION}
 [ -n "$NOTES" ] || NOTES=$(awk -v v="## [$VERSION]" 'index($0, v) == 1 { dedans = 1; next } /^## \[/ { if (dedans) exit } dedans' "$JOURNAL" | sed '/^$/d')
 
