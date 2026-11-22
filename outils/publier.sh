@@ -28,7 +28,7 @@ cd "$TRAVAIL/arbre"
 git checkout -q --orphan televersement
 git rm -rq --cached . >/dev/null 2>&1 || true
 # On garde .github : GitHub ne lance le flux que s'il est dans le commit poussé
-rm -rf ./* 2>/dev/null || true
+git clean -fdxq -e .github
 cp "$TRAVAIL/$SETUP" "$TRAVAIL/publication.json" .
 git add .github "$SETUP" publication.json
 git commit -qm "Publication $SLUG-v$VERSION"
