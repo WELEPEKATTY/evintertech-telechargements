@@ -9,16 +9,18 @@ SLUG="$1"; VERSION="$2"; FICHIER="$3"; JOURNAL="$4"; TITRE="${5:-$SLUG $VERSION}
 [ -f "$FICHIER" ] || { echo "Usage : publier.sh <slug> <version> <fichier> <CHANGELOG.md> [titre]"; exit 1; }
 SETUP=$(basename "$FICHIER")
 # Notes : la section de cette version dans le CHANGELOG
-# ETIQUETTE et NOTES peuvent être imposées (ex. pack testeurs : ETIQUETTE=pack-testeurs)
+# ETIQUETTE et NOTES peuvent être imposées (ex. packs d'installation : ETIQUETTE=pack-installation)
 ETIQUETTE=${ETIQUETTE:-$SLUG-v$VERSION}
 [ -n "$NOTES" ] || NOTES=$(awk -v v="## [$VERSION]" 'index($0, v) == 1 { dedans = 1; next } /^## \[/ { if (dedans) exit } dedans' "$JOURNAL" | sed '/^$/d')
 
+# FICHIERS_EN_PLUS (noms dans DOSSIER_FICHIERS) : plusieurs fichiers dans la même Release
 TRAVAIL=$(mktemp -d)
-cp "$FICHIER" "$TRAVAIL/"
+LISTE=${FICHIERS_EN_PLUS:-$SETUP}
+for F in $LISTE; do cp "${DOSSIER_FICHIERS:-$(dirname "$FICHIER")}/$F" "$TRAVAIL/"; done
 node -e '
-const [etiquette, titre, notes, fichier] = process.argv.slice(1);
-require("fs").writeFileSync(process.argv[5] + "/publication.json", JSON.stringify({ etiquette, titre, notes, fichiers: [fichier] }, null, 2));
- ' "$ETIQUETTE" "$TITRE" "$NOTES" "$SETUP" "$TRAVAIL"
+const [etiquette, titre, notes, liste, dossier] = process.argv.slice(1);
+require("fs").writeFileSync(dossier + "/publication.json", JSON.stringify({ etiquette, titre, notes, fichiers: liste.trim().split(/\s+/) }, null, 2));
+ ' "$ETIQUETTE" "$TITRE" "$NOTES" "$LISTE" "$TRAVAIL"
 
 cd "$DEPOT"
 git fetch -q origin main
@@ -31,8 +33,9 @@ git checkout -q --orphan televersement
 git rm -rq --cached . >/dev/null 2>&1 || true
 # On garde .github : GitHub ne lance le flux que s'il est dans le commit poussé
 git clean -fdxq -e .github
-cp "$TRAVAIL/$SETUP" "$TRAVAIL/publication.json" .
-git add .github "$SETUP" publication.json
+for F in $LISTE; do cp "$TRAVAIL/$F" .; done
+cp "$TRAVAIL/publication.json" .
+git add .github publication.json $LISTE
 git commit -qm "Publication $ETIQUETTE"
 git push -q -f origin televersement
 cd "$DEPOT" && git worktree remove --force "$TRAVAIL/arbre"

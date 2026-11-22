@@ -1,0 +1,8 @@
+Pack d'installation EVINTERTECH
+
+1. Clic droit sur le zip > Extraire tout.
+2. Double-cliquez sur Installer.cmd.
+3. Repondez Oui quand Windows demande d ajouter le certificat EVINTERTECH.
+4. Suivez l'installation du logiciel.
+
+Aide : support@evintertech.com - www.evintertech.com/logiciels
