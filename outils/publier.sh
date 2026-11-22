@@ -20,6 +20,8 @@ require("fs").writeFileSync(process.argv[5] + "/publication.json", JSON.stringif
 
 cd "$DEPOT"
 git fetch -q origin main
+git worktree prune
+git branch -D televersement >/dev/null 2>&1 || true
 # Branche sans historique : les anciens installateurs ne s'accumulent pas dans le dépôt
 git worktree add -q --detach "$TRAVAIL/arbre" origin/main
 cd "$TRAVAIL/arbre"
