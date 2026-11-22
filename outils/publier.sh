@@ -25,9 +25,10 @@ git worktree add -q --detach "$TRAVAIL/arbre" origin/main
 cd "$TRAVAIL/arbre"
 git checkout -q --orphan televersement
 git rm -rq --cached . >/dev/null 2>&1 || true
-rm -rf ./*  .github 2>/dev/null || true
+# On garde .github : GitHub ne lance le flux que s'il est dans le commit poussé
+rm -rf ./* 2>/dev/null || true
 cp "$TRAVAIL/$SETUP" "$TRAVAIL/publication.json" .
-git add "$SETUP" publication.json
+git add .github "$SETUP" publication.json
 git commit -qm "Publication $SLUG-v$VERSION"
 git push -q -f origin televersement
 cd "$DEPOT" && git worktree remove --force "$TRAVAIL/arbre"
