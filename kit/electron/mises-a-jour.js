@@ -11,10 +11,15 @@ const { spawn } = require("node:child_process");
 
 const SITE = "https://www.evintertech.com";
 
+// « 1.0.0-beta.2 » → [1, 0, 0, 2] ; une version finale passe après toutes ses bêtas
+const decouper = (v) => {
+  const m = /^(\d+)\.(\d+)\.(\d+)(?:-beta\.(\d+))?$/.exec(String(v));
+  return m ? [+m[1], +m[2], +m[3], m[4] === undefined ? Infinity : +m[4]] : [0, 0, 0, 0];
+};
 const plusRecente = (a, b) => {
-  const pa = a.split(".").map(Number);
-  const pb = b.split(".").map(Number);
-  for (let i = 0; i < 3; i++) if ((pa[i] ?? 0) !== (pb[i] ?? 0)) return (pa[i] ?? 0) > (pb[i] ?? 0);
+  const pa = decouper(a);
+  const pb = decouper(b);
+  for (let i = 0; i < 4; i++) if (pa[i] !== pb[i]) return pa[i] > pb[i];
   return false;
 };
 
