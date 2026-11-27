@@ -6,6 +6,9 @@
 set -e
 DEPOT=$(cd "$(dirname "$0")/.." && pwd)
 SLUG="$1"; VERSION="$2"; FICHIER="$3"; JOURNAL="$4"; TITRE="${5:-$SLUG $VERSION}"
+# chemins absolus : le script change de dossier avant de vérifier la taille des fichiers en ligne
+FICHIER="$(cd "$(dirname "$FICHIER")" && pwd)/$(basename "$FICHIER")"
+[ -n "$DOSSIER_FICHIERS" ] && DOSSIER_FICHIERS="$(cd "$DOSSIER_FICHIERS" && pwd)"
 [ -f "$FICHIER" ] || { echo "Usage : publier.sh <slug> <version> <fichier> <CHANGELOG.md> [titre]"; exit 1; }
 SETUP=$(basename "$FICHIER")
 # Installateur incomplet ou abîmé : on refuse de publier (Windows afficherait « integrity check has failed »)
