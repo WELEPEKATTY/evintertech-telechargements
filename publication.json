@@ -1,0 +1,9 @@
+{
+  "etiquette": "welegnapeli-eq224-v1.0.0-beta.2",
+  "titre": "WéléGnapeli EQ224 1.0.0-beta.2",
+  "notes": "- Logo et icône officiels de WéléGnapeli EQ224 (plugin, application, installateur).\n- Nom affiché avec ses accents : WéléGnapeli EQ224. Dans la liste des plugins, il reste « WeleGnapeli EQ224 » : « EQ224 » ou « Gnapeli » le trouvent toujours.\n- En-tête aux couleurs du logo : « EQ » en noir et « 224 » en rouge sur fond or.",
+  "fichiers": [
+    "WeleGnapeli-EQ224-1.0.0-beta.2-Setup.exe",
+    "WeleGnapeli-EQ224-1.0.0-beta.2-Mac.pkg"
+  ]
+}
